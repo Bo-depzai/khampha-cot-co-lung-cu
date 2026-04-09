@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khám Phá Cột Cờ Lũng Cú - Hà Giang</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --font-display: 'Instrument Serif', serif;
+            --font-body: 'Inter', sans-serif;
+            --accent: #E11D48;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: #020617;
+            color: #f8fafc;
+            scroll-behavior: smooth;
+        }
+
+        .font-display { font-family: var(--font-display); }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .video-overlay {
+            background: radial-gradient(circle at center, rgba(2,6,23,0.3) 0%, rgba(2,6,23,0.9) 100%);
+        }
+
+        @keyframes reveal {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .reveal {
+            animation: reveal 1.2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        }
+
+        .nav-blur {
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            background: rgba(2, 6, 23, 0.7);
+        }
+
+        @keyframes scrollLeft {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        @keyframes scrollRight {
+            0% { transform: translateX(-50%); }
+            100% { transform: translateX(0); }
+        }
+
+        .marquee-container {
+            display: flex;
+            width: fit-content;
+        }
+
+        .animate-scroll-left {
+            animation: scrollLeft 50s linear infinite;
+        }
+
+        .animate-scroll-right {
+            animation: scrollRight 50s linear infinite;
+        }
+
+        .marquee-wrapper:hover .animate-scroll-left,
+        .marquee-wrapper:hover .animate-scroll-right {
+            animation-play-state: paused;
+        }
+
+        #lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            background: rgba(2, 6, 23, 0.95);
+            backdrop-filter: blur(20px);
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            cursor: zoom-out;
+        }
+
+        #lightbox img {
+            max-width: 90%;
+            max-height: 80vh;
+            object-fit: contain;
+            border-radius: 1rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .content-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s ease-out;
+        }
+
+        .content-section.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .video-mask {
+            mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+        }
+
+        .yt-bg {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100vw;
+            height: 56.25vw;
+            min-width: 177.77vh;
+            min-height: 100vh;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+
+    <!-- Lightbox -->
+    <div id="lightbox" onclick="closeLightbox()">
+        <div class="absolute top-10 right-10 text-white cursor-pointer hover:text-rose-500 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </div>
+        <img id="lightbox-img" src="" alt="Hình ảnh phóng to" onclick="event.stopPropagation()">
+    </div>
+
+    <!-- Background Image -->
+    <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <img src="./image_aa683.jpg" alt="Nền Cột cờ Lũng Cú" class="absolute inset-0 w-full h-full object-cover opacity-[0.16] blur-[1px] scale-105">
+        <div class="absolute inset-0 bg-slate-950/70"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-[100] nav-blur border-b border-white/5">
+        <div class="max-w-7xl mx-auto flex items-center justify-between px-8 py-4">
+            <div class="font-display text-3xl tracking-tight">
+                Lũng Cú<span class="text-rose-500">.</span>
+            </div>
+            <div class="hidden md:flex gap-10 text-[10px] uppercase tracking-[0.2em] font-medium text-gray-400">
+                <a href="#history" class="hover:text-white transition-all">Lịch sử</a>
+                <a href="#architecture" class="hover:text-white transition-all">Kiến trúc</a>
+                <a href="#gallery" class="hover:text-white transition-all">Bộ sưu tập</a>
+                <a href="#guide" class="hover:text-white transition-all">Cẩm nang</a>
+            </div>
+            <button class="glass-card px-8 py-2 rounded-full text-xs uppercase tracking-widest font-bold hover:bg-white hover:text-black transition-all">
+                Lên lịch trình
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="relative z-10 flex flex-col items-center justify-center text-center min-h-screen px-6">
+        <span class="reveal text-rose-500 font-medium tracking-[0.5em] uppercase text-xs mb-6">Biểu tượng thiêng liêng</span>
+        <h1 class="reveal font-display text-6xl md:text-9xl leading-[0.9] max-w-6xl">
+            Địa đầu <span class="italic text-gray-400">Tổ quốc</span><br>Lũng Cú <span class="italic text-gray-400">Hà Giang.</span>
+        </h1>
+        <p class="reveal mt-12 max-w-2xl text-lg text-gray-400 font-light leading-relaxed">
+            Nơi lồng ngực trào dâng niềm tự hào dân tộc mãnh liệt dưới bóng cờ đỏ sao vàng giữa mây ngàn cao nguyên đá.
+        </p>
+    </header>
+
+    <!-- Main Content -->
+    <main class="relative z-10 space-y-40 pb-40">
+        
+        <!-- Section: Cinematic Video Insight -->
+        <section class="max-w-7xl mx-auto px-8 content-section">
+            <div class="glass-card rounded-[3rem] overflow-hidden flex flex-col lg:flex-row items-stretch border border-white/10">
+                <div class="lg:w-3/5 relative min-h-[400px] overflow-hidden video-mask">
+                    <iframe
+                        class="absolute inset-0 w-full h-full object-cover grayscale-[0.3] hover:grayscale-0 transition-all duration-1000"
+                        src="https://www.youtube.com/embed/MI1prAinvdk?autoplay=1&mute=1&loop=1&playlist=MI1prAinvdk&controls=1&rel=0&playsinline=1&iv_load_policy=3"
+                        title="YouTube video"
+                        allow="autoplay; encrypted-media; picture-in-picture"
+                        allowfullscreen>
+                    </iframe>
+                    <div class="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent flex items-end p-12">
+                        <div class="glass-card p-4 rounded-full backdrop-blur-md">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:w-2/5 p-12 lg:p-16 flex flex-col justify-center space-y-8 bg-white/[0.01]">
+                    <div class="text-rose-500 text-[10px] font-bold tracking-[0.4em] uppercase">Cinematic Experience</div>
+                    <h3 class="font-display text-4xl leading-tight italic">"Đứng giữa mây ngàn,<br> thấy quê hương mình lớn rộng."</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed font-light">
+                        Hãy nhắm mắt lại và cảm nhận tiếng gió rít qua những triền đá tai mèo, tiếng lá cờ 54m² vỗ phần phật trong không trung. Đó là hơi thở của biên cương, là nhịp đập của trái tim Việt Nam nơi cực Bắc.
+                    </p>
+                    <div class="flex items-center gap-4 pt-4">
+                        <div class="h-[1px] w-12 bg-rose-500/50"></div>
+                        <span class="text-[10px] uppercase tracking-widest text-gray-500">Hà Giang tháng 10</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Introduction & History -->
+        <section id="history" class="max-w-7xl mx-auto px-8 content-section">
+            <div class="grid lg:grid-cols-2 gap-20 items-center">
+                <div class="space-y-8">
+                    <div class="text-rose-500 text-xs font-bold tracking-[0.3em] uppercase">01. Vị trí & Dấu ấn lịch sử</div>
+                    <h2 class="font-display text-5xl md:text-6xl">Điểm mốc cực Bắc thiêng liêng</h2>
+                    <div class="space-y-6 text-gray-400 leading-relaxed font-light">
+                        <p>
+                            Tọa lạc trên đỉnh <span class="text-white font-medium">núi Rồng (Long Sơn)</span> ở độ cao 1.470m, Cột cờ Lũng Cú là điểm đánh dấu cực Bắc của Việt Nam. Cách thành phố Hà Giang 160km đèo dốc ngoạn mục, đây là nơi khẳng định chủ quyền ngàn đời.
+                        </p>
+                        <p>
+                            Từ thời Lý, Thái úy Lý Thường Kiệt đã cắm cờ khẳng định lãnh thổ. Đến thời Tây Sơn, vua Quang Trung đặt trống đồng tại trạm gác biên ải. Mỗi hồi trống vang lên là lời báo hiệu bình yên cho bờ cõi phía Bắc.
+                        </p>
+                    </div>
+                </div>
+                <div class="glass-card p-4 rounded-[2.5rem]">
+                    <img src="./image_aa683.jpg" class="w-full aspect-[4/5] object-cover rounded-[2rem] opacity-70" alt="Cột cờ Lũng Cú">
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Architecture & Meaning -->
+        <section id="architecture" class="space-y-20 content-section">
+            <div class="max-w-7xl mx-auto px-8 text-center md:text-left flex flex-col md:flex-row justify-between items-end gap-10">
+                <div class="space-y-4">
+                    <div class="text-rose-500 text-xs font-bold tracking-[0.3em] uppercase">02. Kiến trúc & Ý nghĩa</div>
+                    <h2 class="font-display text-5xl md:text-6xl">Bản sắc văn hóa Việt</h2>
+                </div>
+                <p class="text-gray-500 max-w-sm text-sm uppercase tracking-widest leading-relaxed">
+                    Thiết kế tinh xảo từ chân bệ bát giác đến lá cờ rộng lớn, mang đậm linh hồn dân tộc.
+                </p>
+            </div>
+
+            <div class="max-w-7xl mx-auto px-8 grid md:grid-cols-3 gap-8">
+                <div class="glass-card p-10 rounded-[2.5rem] space-y-6">
+                    <div class="text-rose-500 font-display text-5xl italic">54m²</div>
+                    <h3 class="text-xl font-medium">Lá cờ thiêng liêng</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">Tượng trưng cho sự đoàn kết của 54 dân tộc anh em. Lá cờ 9m x 6m luôn tung bay kiêu hãnh giữa gió ngàn cực Bắc.</p>
+                </div>
+                <div class="glass-card p-10 rounded-[2.5rem] space-y-6 mt-12">
+                    <div class="text-rose-500 font-display text-5xl italic">839</div>
+                    <h3 class="text-xl font-medium">Bậc đá vinh quang</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">Hành trình chinh phục qua 3 chặng bậc đá để chạm tay vào bệ cột cờ, cảm nhận sự kiên cường của những người lính giữ biên cương.</p>
+                </div>
+                <div class="glass-card p-10 rounded-[2.5rem] space-y-6">
+                    <div class="text-rose-500 font-display text-5xl italic">Phù điêu</div>
+                    <h3 class="text-xl font-medium">Trống đồng Đông Sơn</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">Chân bệ bát giác gắn 8 mặt trống đồng và 8 bức phù điêu đá xanh minh họa lịch sử hào hùng của đất nước.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Gallery Marquee -->
+        <section id="gallery" class="space-y-12 overflow-hidden content-section">
+            <div class="px-8 max-w-7xl mx-auto text-center">
+                <div class="text-rose-500 text-xs font-bold tracking-[0.3em] uppercase mb-4">03. Bộ sưu tập</div>
+                <h2 class="font-display text-5xl">Góc nhìn từ đỉnh Núi Rồng</h2>
+            </div>
+
+            <div class="marquee-wrapper relative">
+                <div id="gallery-track" class="marquee-container animate-scroll-left flex gap-6 px-6"></div>
+            </div>
+        </section>
+
+        <!-- Section: Experience -->
+        <section class="max-w-7xl mx-auto px-8 grid lg:grid-cols-2 gap-20 items-center content-section">
+            <div class="order-2 lg:order-1 glass-card p-6 rounded-[3rem] relative">
+                <img src="./image_aa683.jpg" class="w-full aspect-square object-cover rounded-[2.5rem] opacity-60" alt="Hai hồ Mắt Rồng">
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="text-center p-10">
+                        <h4 class="font-display text-4xl mb-4 italic">Hai hồ "Mắt Rồng"</h4>
+                        <p class="text-sm text-gray-300">Huyền thoại về nguồn nước ngọt vô tận dưới chân núi thiêng.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="order-1 lg:order-2 space-y-10">
+                <div class="text-rose-500 text-xs font-bold tracking-[0.3em] uppercase">04. Trải nghiệm</div>
+                <h2 class="font-display text-5xl md:text-6xl">Lạc giữa kỳ quan</h2>
+                <div class="space-y-8">
+                    <div class="flex gap-6">
+                        <div class="w-12 h-12 rounded-full border border-rose-500/30 flex items-center justify-center flex-shrink-0 text-rose-500">01</div>
+                        <div>
+                            <h4 class="text-xl font-medium mb-2">Bản Lô Lô Chải</h4>
+                            <p class="text-gray-400 text-sm leading-relaxed">Khám phá ngôi làng cổ tích với nhà trình tường vách đất và ngói âm dương trầm mặc.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-6">
+                        <div class="w-12 h-12 rounded-full border border-rose-500/30 flex items-center justify-center flex-shrink-0 text-rose-500">02</div>
+                        <div>
+                            <h4 class="text-xl font-medium mb-2">Thưởng thức Cafe Cực Bắc</h4>
+                            <p class="text-gray-400 text-sm leading-relaxed">Nhâm nhi hương vị nồng nàn trong tiết trời se lạnh, ngắm nhìn cột cờ sừng sững phía trời cao.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Guide A-Z -->
+        <section id="guide" class="max-w-7xl mx-auto px-8 content-section">
+            <div class="glass-card rounded-[3rem] p-12 md:p-20 space-y-16">
+                <div class="text-center space-y-4">
+                    <h2 class="font-display text-5xl md:text-6xl italic">Cẩm nang từ A - Z</h2>
+                    <p class="text-gray-500 tracking-widest uppercase text-xs">Chuẩn bị cho hành trình vạn dặm</p>
+                </div>
+                
+                <div class="grid md:grid-cols-3 gap-12">
+                    <div class="space-y-4">
+                        <h4 class="text-rose-500 uppercase tracking-widest text-[10px] font-bold">Thời điểm lý tưởng</h4>
+                        <ul class="text-sm text-gray-400 space-y-3">
+                            <li>• <b>T10 - T11:</b> Mùa hoa tam giác mạch hồng rực.</li>
+                            <li>• <b>T2 - T3:</b> Bức tranh hoa đào, hoa mận bừng sáng.</li>
+                            <li>• <b>T9:</b> Mùa lúa chín vàng óng trên ruộng bậc thang.</li>
+                        </ul>
+                    </div>
+                    <div class="space-y-4">
+                        <h4 class="text-rose-500 uppercase tracking-widest text-[10px] font-bold">Hướng dẫn di chuyển</h4>
+                        <p class="text-sm text-gray-400 leading-relaxed">
+                            Cung đường QL4C vượt những con đèo ngoạn mục. Bạn có thể thuê xe máy tự do trải nghiệm hoặc đi ô tô dịch vụ. Lưu ý tay lái phải vững với các khúc cua tay áo.
+                        </p>
+                    </div>
+                    <div class="space-y-4">
+                        <h4 class="text-rose-500 uppercase tracking-widest text-[10px] font-bold">Thông tin hữu ích</h4>
+                        <p class="text-sm text-gray-400 leading-relaxed">
+                            <b>Giá vé:</b> 25.000 VNĐ/người lớn.<br>
+                            <b>Tiện ích:</b> Có hệ thống xe điện hỗ trợ người già/trẻ nhỏ từ bãi xe lên lưng chừng núi để giảm quãng đường leo bộ.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Nearby Destinations -->
+        <section id="nearby" class="max-w-7xl mx-auto px-8 space-y-16 content-section">
+            <div class="text-center space-y-4">
+                <div class="text-rose-500 text-xs font-bold tracking-[0.3em] uppercase">05. Gợi ý thêm</div>
+                <h2 class="font-display text-5xl md:text-6xl">Hành trình tiếp nối</h2>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="glass-card p-4 rounded-[2.5rem] group cursor-pointer overflow-hidden">
+                    <div class="aspect-[4/3] overflow-hidden rounded-[1.8rem] mb-6">
+                        <img src="./image_aa63e4.jpg" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-60" alt="Dinh Vua Mèo">
+                    </div>
+                    <div class="px-4 pb-4">
+                        <h4 class="text-xl font-medium mb-2">Dinh Vua Mèo</h4>
+                        <p class="text-gray-400 text-sm font-light leading-relaxed">Kiệt tác kiến trúc bằng gỗ sa mộc và đá xanh giữa thung lũng Sà Phìn.</p>
+                    </div>
+                </div>
+
+                <div class="glass-card p-4 rounded-[2.5rem] group cursor-pointer overflow-hidden">
+                    <div class="aspect-[4/3] overflow-hidden rounded-[1.8rem] mb-6">
+                        <img src="./image_aa6048.jpg" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-60" alt="Phố cổ Đồng Văn">
+                    </div>
+                    <div class="px-4 pb-4">
+                        <h4 class="text-xl font-medium mb-2">Phố Cổ Đồng Văn</h4>
+                        <p class="text-gray-400 text-sm font-light leading-relaxed">Nơi thưởng thức thắng cố, rượu ngô và dạo chợ đêm rộn rã cuối tuần.</p>
+                    </div>
+                </div>
+
+                <div class="glass-card p-4 rounded-[2.5rem] group cursor-pointer overflow-hidden">
+                    <div class="aspect-[4/3] overflow-hidden rounded-[1.8rem] mb-6">
+                        <img src="./image_aa638d.jpg" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-60" alt="Đèo Mã Pì Lèng và sông Nho Quế">
+                    </div>
+                    <div class="px-4 pb-4">
+                        <h4 class="text-xl font-medium mb-2 text-wrap">Đèo Mã Pì Lèng & Sông Nho Quế</h4>
+                        <p class="text-gray-400 text-sm font-light leading-relaxed">Chinh phục "tứ đại đỉnh đèo" và đi thuyền trên dòng nước xanh ngọc bích.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="relative z-10 border-t border-white/5 py-24 text-center">
+        <div class="max-w-7xl mx-auto px-8">
+            <div class="font-display text-4xl mb-6">Hà Giang Heritage</div>
+            <p class="text-gray-500 text-xs tracking-[0.4em] uppercase mb-16">Chạm vào tinh hoa địa đầu tổ quốc</p>
+            <div class="text-[10px] text-gray-700">
+                &copy; 2024 LUNG CU FLAG TOWER. ALL RIGHTS RESERVED.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+
+        function openLightbox(src) {
+            lightboxImg.src = src;
+            lightbox.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            lightbox.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    window.scrollTo({
+                        top: target.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        const observerOptions = { threshold: 0.15 };
+        const sectionObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.content-section').forEach(section => {
+            sectionObserver.observe(section);
+        });
+
+        const imgList = [
+            './cot-co-lung-cu-2.jpg',
+            './cot-co-lung-cu-tour-5n4d-6738.jpg',
+            './image_aa5c82.jpg',
+            './image_aa5f6e.jpg',
+            './image_aa5f8a.jpg',
+            './image_aa63e4.jpg',
+            './image_aa632e.jpg',
+            './image_aa636f.jpg',
+            './image_aa638d.jpg',
+            './image_aa6048.jpg',
+            './image_aa6350.jpg'
+        ];
+
+        const galleryTrack = document.getElementById('gallery-track');
+        const makeCard = (src) => `
+            <div class="w-72 md:w-96 flex-shrink-0 glass-card p-3 rounded-[2rem] cursor-zoom-in group" onclick="openLightbox('${src}')">
+                <div class="overflow-hidden rounded-[1.5rem] aspect-square">
+                    <img src="${src}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-80" alt="Ảnh Lũng Cú">
+                </div>
+            </div>
+        `;
+
+        // Tạo 2 vòng để chạy marquee mượt hơn
+        const looped = imgList.concat(imgList);
+        galleryTrack.innerHTML = looped.map(makeCard).join('');
+    </script>
+</body>
+</html>
